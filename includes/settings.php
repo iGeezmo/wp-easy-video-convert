@@ -1,4 +1,5 @@
 <?php
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -9,27 +10,13 @@ add_action( 'admin_init', 'vtg_settings_init' );
 function vtg_add_main_menu() {
     // Создаём пункт верхнего уровня
     add_menu_page(
-        'Video Thumbnail Generator',    // Заголовок страницы
-        'Video Thumbnail Generator',    // Название пункта меню
-        'manage_options',               // Права доступа
-        'video_thumbnail_generator',    // Slug
-        'vtg_options_page',             // Функция отображения (ниже)
-        'dashicons-video-alt3',         // Иконка меню
-        50                               // Порядок
-    );
-// Привязка функции к хуку admin_menu
-add_action('admin_menu', 'vtg_add_main_menu');
-
-function vtg_add_main_menu() {
-    // Создаём пункт верхнего уровня
-    add_menu_page(
-        'Video Thumbnail Generator',    // Заголовок страницы
-        'Video Thumbnail Generator',    // Название пункта меню
-        'manage_options',               // Права доступа
-        'video_thumbnail_generator',    // Slug
-        'vtg_options_page',             // Функция отображения
-        'dashicons-video-alt3',         // Иконка меню
-        50                              // Порядок
+        'Video Thumbnail Generator',        // Заголовок страницы
+        'Video Thumbnail Generator',        // Название пункта меню
+        'manage_options',                   // Права доступа
+        'video_thumbnail_generator',        // Slug
+        'vtg_options_page',                 // Функция отображения
+        'dashicons-video-alt3',             // Иконка меню
+        50                                  // Порядок
     );
 
     // Добавляем подпункт «Video Upload»
@@ -49,56 +36,7 @@ function vtg_add_main_menu() {
         'Settings',
         'manage_options',
         'vtg_settings',
-        'vtg_settings_page' // Отдельная функция отображения
-    );
-}
-
-// Основная функция отображения
-function vtg_options_page() {
-    if (!current_user_can('manage_options')) {
-        wp_die(__('У вас нет прав на доступ к этой странице.'));
-    }
-    echo '<h1>Video Thumbnail Generator</h1>';
-    echo '<p>Добро пожаловать в плагин для генерации превью видео!</p>';
-}
-
-// Функция отображения страницы загрузки видео
-function vtg_video_uploader_page() {
-    if (!current_user_can('upload_files')) {
-        wp_die(__('У вас нет прав на доступ к этой странице.'));
-    }
-    echo '<h1>Загрузка видео</h1>';
-    echo '<p>Страница для загрузки и управления видео.</p>';
-}
-
-// Функция отображения настроек
-function vtg_settings_page() {
-    if (!current_user_can('manage_options')) {
-        wp_die(__('У вас нет прав на доступ к этой странице.'));
-    }
-    echo '<h1>Настройки Video Thumbnail Generator</h1>';
-    echo '<form method="post" action="options.php">';
-    // Добавьте поля и настройки
-    echo '<p>Настройки будут здесь.</p>';
-    echo '</form>';
-}
-    // Добавляем подпункт «Video Upload»
-    add_submenu_page(
-        'video_thumbnail_generator',
-        'Video Upload',
-        'Video Upload',
-        'upload_files',
-        'vtg_video_uploader',
-        'vtg_video_uploader_page'
-    );
-    // Добавляем подпункт «Settings»
-    add_submenu_page(
-        'video_thumbnail_generator',
-        'Settings',
-        'Settings',
-        'manage_options',
-        'vtg_settings',  // Новый уникальный slug
-        'vtg_options_page'
+        'vtg_settings_page'
     );
 }
 
@@ -183,7 +121,6 @@ function vtg_settings_init() {
     );
 }
 
-// Функции отображения
 function vtg_enable_thumbnail_render() {
     $options = get_option( 'vtg_settings' );
     ?>
@@ -226,8 +163,8 @@ function vtg_crf_render() {
 
 function vtg_preset_render() {
     $options = get_option( 'vtg_settings' );
-    $preset = isset( $options['vtg_preset'] ) ? $options['vtg_preset'] : 'slow';
-    $custom = isset( $options['vtg_preset_custom'] ) ? $options['vtg_preset_custom'] : '';
+    $preset  = isset( $options['vtg_preset'] ) ? $options['vtg_preset'] : 'slow';
+    $custom  = isset( $options['vtg_preset_custom'] ) ? $options['vtg_preset_custom'] : '';
     $default_presets = array(
         'ultrafast' => 'ultrafast',
         'superfast' => 'superfast',
@@ -253,26 +190,26 @@ function vtg_preset_render() {
     <input type="text" id="vtg_preset_custom" name="vtg_settings[vtg_preset_custom]" value="<?php echo esc_attr( $custom ); ?>" placeholder="Введите пресет">
     <p class="description">Выберите предустановленный набор параметров для конвертации или выберите "Custom" для ввода собственного значения.</p>
     <script type="text/javascript">
-    (function($){
-        $('#vtg_preset_select').change(function(){
-            if($(this).val() === 'custom'){
+        (function($){
+            $('#vtg_preset_select').change(function(){
+                if($(this).val() === 'custom'){
+                    $('#vtg_preset_custom').show();
+                } else {
+                    $('#vtg_preset_custom').hide();
+                }
+            });
+            if($('#vtg_preset_select').val() === 'custom'){
                 $('#vtg_preset_custom').show();
             } else {
                 $('#vtg_preset_custom').hide();
             }
-        });
-        if($('#vtg_preset_select').val() === 'custom'){
-            $('#vtg_preset_custom').show();
-        } else {
-            $('#vtg_preset_custom').hide();
-        }
-    })(jQuery);
+        })(jQuery);
     </script>
     <?php
 }
 
 function vtg_faststart_render() {
-    $options = get_option( 'vtg_settings' );
+    $options   = get_option( 'vtg_settings' );
     $faststart = isset( $options['vtg_faststart'] ) ? $options['vtg_faststart'] : 'enabled';
     ?>
     <select name="vtg_settings[vtg_faststart]">
@@ -284,7 +221,7 @@ function vtg_faststart_render() {
 }
 
 function vtg_subtitle_render() {
-    $options = get_option( 'vtg_settings' );
+    $options  = get_option( 'vtg_settings' );
     $subtitle = isset( $options['vtg_subtitle'] ) ? $options['vtg_subtitle'] : 'none';
     ?>
     <select name="vtg_settings[vtg_subtitle]">
@@ -317,20 +254,17 @@ function vtg_options_page() {
 
 function vtg_get_status() {
     $status_html = '';
-    
     if ( ! function_exists( 'exec' ) || ! is_callable( 'exec' ) ) {
         $status_html .= '<div style="background-color: #fdd; padding: 10px; margin-bottom: 15px;"><strong>Ошибка:</strong> Функция <code>exec</code> недоступна.</div>';
         return $status_html;
     }
-    
     $ffmpeg_check = shell_exec( 'ffmpeg -version 2>&1' );
     if ( stripos( $ffmpeg_check, 'ffmpeg version' ) === false ) {
         $status_html .= '<div style="background-color: #fdd; padding: 10px; margin-bottom: 15px;"><strong>Ошибка:</strong> FFmpeg не установлен или недоступен.</div>';
     } else {
-        $lines = explode( "\n", $ffmpeg_check );
+        $lines        = explode( "\n", $ffmpeg_check );
         $version_info = isset( $lines[0] ) ? trim( $lines[0] ) : 'Версия неизвестна';
         $status_html .= '<div style="background-color: #dfd; padding: 10px; margin-bottom: 15px;"><strong>Статус:</strong> FFmpeg установлен. ' . esc_html( $version_info ) . '</div>';
     }
-    
     return $status_html;
 }
