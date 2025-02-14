@@ -1,22 +1,22 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Регистрируем функцию один раз через хук admin_menu
 add_action( 'admin_menu', 'vtg_add_main_menu' );
 add_action( 'admin_init', 'vtg_settings_init' );
 
 function vtg_add_main_menu() {
     // Создаём пункт верхнего уровня
     add_menu_page(
-        'Video Thumbnail Generator',        // Заголовок страницы
-        'Video Thumbnail Generator',        // Название пункта меню
-        'manage_options',                   // Права доступа
-        'video_thumbnail_generator',        // Slug
-        'vtg_options_page',                 // Функция отображения
-        'dashicons-video-alt3',             // Иконка меню
-        50                                  // Порядок
+        'Video Thumbnail Generator', // Заголовок страницы
+        'Video Thumbnail Generator', // Название пункта меню
+        'manage_options',            // Права доступа
+        'video_thumbnail_generator', // Slug
+        'vtg_options_page',          // Функция отображения
+        'dashicons-video-alt3',      // Иконка меню
+        50                           // Порядок
     );
 
     // Добавляем подпункт «Video Upload»
@@ -66,7 +66,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // Время для извлечения кадра (миниатюра)
     add_settings_field(
         'vtg_time_offset',
         __( 'Время для извлечения кадра', 'vtg' ),
@@ -75,7 +74,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // Разрешение видео
     add_settings_field(
         'vtg_resolution',
         __( 'Разрешение видео', 'vtg' ),
@@ -84,7 +82,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // CRF (качество)
     add_settings_field(
         'vtg_crf',
         __( 'Качество видео (CRF)', 'vtg' ),
@@ -93,7 +90,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // Пресет кодирования (dropdown + custom)
     add_settings_field(
         'vtg_preset',
         __( 'Пресет кодирования', 'vtg' ),
@@ -102,7 +98,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // Опция Fast Start
     add_settings_field(
         'vtg_faststart',
         __( 'Fast Start', 'vtg' ),
@@ -111,7 +106,6 @@ function vtg_settings_init() {
         'vtg_plugin_page_section'
     );
 
-    // Обработка субтитров
     add_settings_field(
         'vtg_subtitle',
         __( 'Обработка субтитров', 'vtg' ),
@@ -141,7 +135,7 @@ function vtg_time_offset_render() {
     $options = get_option( 'vtg_settings' );
     ?>
     <input type='text' name='vtg_settings[vtg_time_offset]' value='<?php echo isset( $options['vtg_time_offset'] ) ? esc_attr( $options['vtg_time_offset'] ) : '00:00:05'; ?>' placeholder="00:00:05">
-    <p class="description">Укажите время (ЧЧ:ММ:СС) для извлечения кадра миниатюры. Пример: "00:00:05" – через 5 секунд от начала видео.</p>
+    <p class="description">Укажите время (ЧЧ:ММ:СС) для извлечения кадра миниатюры.</p>
     <?php
 }
 
@@ -149,7 +143,7 @@ function vtg_resolution_render() {
     $options = get_option( 'vtg_settings' );
     ?>
     <input type='text' name='vtg_settings[vtg_resolution]' value='<?php echo isset( $options['vtg_resolution'] ) ? esc_attr( $options['vtg_resolution'] ) : '1280x720'; ?>' placeholder="1280x720">
-    <p class="description">Введите разрешение выходного видео, например, "1280x720" для HD или "1920x1080" для Full HD.</p>
+    <p class="description">Введите разрешение выходного видео (например, "1280x720").</p>
     <?php
 }
 
@@ -157,7 +151,7 @@ function vtg_crf_render() {
     $options = get_option( 'vtg_settings' );
     ?>
     <input type='number' name='vtg_settings[vtg_crf]' value='<?php echo isset( $options['vtg_crf'] ) ? esc_attr( $options['vtg_crf'] ) : '23'; ?>' min="18" max="28">
-    <p class="description">CRF определяет качество сжатия: от 18 (высокое качество) до 28 (низкое качество). Рекомендуется 23.</p>
+    <p class="description">CRF определяет качество сжатия: от 18 (высокое качество) до 28 (низкое качество).</p>
     <?php
 }
 
@@ -216,7 +210,7 @@ function vtg_faststart_render() {
         <option value="enabled" <?php selected( $faststart, 'enabled' ); ?>>Enabled</option>
         <option value="disabled" <?php selected( $faststart, 'disabled' ); ?>>Disabled</option>
     </select>
-    <p class="description">Включите Fast Start для перемещения метаданных (moov atom) в начало файла – это ускоряет начало воспроизведения видео.</p>
+    <p class="description">Включите Fast Start для перемещения метаданных в начало файла.</p>
     <?php
 }
 
@@ -228,12 +222,12 @@ function vtg_subtitle_render() {
         <option value="none" <?php selected( $subtitle, 'none' ); ?>>None</option>
         <option value="mov_text" <?php selected( $subtitle, 'mov_text' ); ?>>Embed Subtitles (mov_text)</option>
     </select>
-    <p class="description">Выберите способ обработки субтитров. Опция "Embed Subtitles (mov_text)" встроит субтитры в видео (если они имеются).</p>
+    <p class="description">Выберите способ обработки субтитров.</p>
     <?php
 }
 
 function vtg_settings_section_callback() {
-    echo __( 'Укажите все параметры для конвертации видео. "Время для извлечения кадра" используется для создания миниатюры, остальные параметры – для перекодировки видео.', 'vtg' );
+    echo __( 'Укажите параметры для конвертации видео. "Время для извлечения кадра" используется для создания миниатюры, остальные – для перекодировки видео.', 'vtg' );
 }
 
 function vtg_options_page() {
